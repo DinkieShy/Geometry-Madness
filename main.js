@@ -56,7 +56,14 @@ function draw(){
 	for(var i = 0; i < points.length; i++){
 		points[i].drawEdges(ctx); //need to draw edges AFTER drawing points
 	}
+}
 
+function addNeighbour(point2){
+	if(!points[selectedPoint].neighbours.includes(point2) && !points[point2].neighbours.includes(selectedPoint)){
+		points[selectedPoint].neighbours.push(point2);
+	}	
+	points[selectedPoint].fill = DEFAULT_FILL;
+	selectedPoint = -1;
 }
 
 selectedPoint = -1;
@@ -78,42 +85,40 @@ $(function(){
 	ctx = canvas.getContext('2d');
 	setInterval(draw, 16);
 
-	canvas.addEventListener('mousedown', function(e){
+	canvas.addEventListener('dblclick', function(e){
+		e.preventDefault();
 		foundExisting = false;
 
 		for(var i = 0; i < points.length; i++){
 			if(points[i].contains(e.clientX, e.clientY)){
 				foundExisting = true;
-				break;
+				if(selectedPoint != -1){
+					addNeighbour(i)
+				}
+				return;
 			}
 		}
-
-		if(!foundExisting){
+		
+		if(selectedPoint == -1){
 			addNewPoint(e.clientX, e.clientY);
 		}
-		else if(selectedPoint != -1){
-			if(!points[selectedPoint].neighbours.includes(i)){
-				points[selectedPoint].neighbours.push(i);
-			}	
+		else{
 			points[selectedPoint].fill = DEFAULT_FILL;
 			selectedPoint = -1;
 		}
+		
 	});
 
-	canvas.addEventListener('dblclick', function(e){
+	canvas.addEventListener('mousedown', function(e){
 		e.preventDefault();
 		for(var i = 0; i < points.length; i++){
-			if(points[i].contains(e.clientX, e.clientY)){
+			if(selectedPoint != i & points[i].contains(e.clientX, e.clientY)){
 				if(selectedPoint == -1){
 					selectedPoint = i;
 					points[i].fill = SELECTED_FILL;
 				}
 				else{
-					if(!points[selectedPoint].neighbours.includes(i)){
-						points[selectedPoint].neighbours.push(i);
-					}	
-					points[selectedPoint].fill = DEFAULT_FILL;
-					selectedPoint = -1;
+					addNeighbour(i)
 				}
 				break;
 			}
