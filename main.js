@@ -134,7 +134,7 @@ $(function(){
 				else{
 					addNeighbour(i);
 				}
-				break;
+				return;
 			}
 		}
 		if(!foundExisting && selectedPoint != -1){
