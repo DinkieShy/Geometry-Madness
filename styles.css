@@ -8,6 +8,7 @@ body{
 }
 
 #cmdbar{
+	user-select: none;
 	position:absolute;
 	bottom: 0px;
 	width: 100vw;
