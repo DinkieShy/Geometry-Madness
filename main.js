@@ -160,6 +160,7 @@ $(function(){
 			if(points[selectedPoint].moved){
 				points[selectedPoint].fill = DEFAULT_FILL;
 				selectedPoint = -1;
+				points[selectedPoint].moved = false;
 			}
 		}
 	});
