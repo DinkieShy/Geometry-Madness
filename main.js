@@ -4,13 +4,19 @@ ctx = ""
 WIDTH = 0;
 HEIGHT = 0;
 
-function Point(x, y){
+function Point(x, y, neighbours = []){
 	this.x = x;
 	this.y = y;
-	this.neighbours = [];
+	this.neighbours = neighbours;
 	this.fill = DEFAULT_FILL;
 	this.moved = false;
 	this.dragging = false;
+}
+
+function NormalisedPoint(point){
+	this.x = point.x/WIDTH;
+	this.y = point.y/HEIGHT;
+	this.neighbours = point.neighbours;
 }
 
 Point.prototype.draw = function(ctx){
@@ -75,6 +81,24 @@ function addNeighbour(point2){
 	}
 	points[selectedPoint].fill = DEFAULT_FILL;
 	selectedPoint = -1;
+}
+
+function createShapeFile(){
+	normalisedPoints = []
+	for(var i = 0; i < points.length; i++){
+		normalisedPoints.push(new NormalisedPoint(points[i]))
+	}
+	dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(normalisedPoints));
+	downloadElem = $('')[0];
+	downloadElem.href = dataStr;
+	downloadElem.download = "shape.json";
+	downloadElem.click()
+}
+
+function expandShapeFile(normalisedPoints){
+	for(var i = 0; i < normalisedPoints.length; i++){
+		points.push(new Point(normalisedPoints[i].x*WIDTH, normalisedPoints[i].y*HEIGHT, normalisedPoints[i].neighbours));
+	}
 }
 
 selectedPoint = -1;
