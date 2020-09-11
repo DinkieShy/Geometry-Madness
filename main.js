@@ -86,13 +86,13 @@ function addNeighbour(point2){
 function createShapeFile(){
 	normalisedPoints = []
 	for(var i = 0; i < points.length; i++){
-		normalisedPoints.push(new NormalisedPoint(points[i]))
+		normalisedPoints.push(new NormalisedPoint(points[i]));
 	}
 	dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(normalisedPoints));
 	downloadElem = $('#downloadanchor')[0];
 	downloadElem.href = dataStr;
 	downloadElem.download = "shape.json";
-	downloadElem.click()
+	downloadElem.click();
 }
 
 function expandShapeFile(normalisedPoints){
