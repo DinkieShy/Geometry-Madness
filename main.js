@@ -89,7 +89,7 @@ function createShapeFile(){
 		normalisedPoints.push(new NormalisedPoint(points[i]))
 	}
 	dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(normalisedPoints));
-	downloadElem = $('')[0];
+	downloadElem = $('#downloadanchor')[0];
 	downloadElem.href = dataStr;
 	downloadElem.download = "shape.json";
 	downloadElem.click()
@@ -197,5 +197,7 @@ $(function(){
 			}
 		}
 	});
+
+	$('#downloadButton')[0].onclick = createShapeFile;
 
 });
