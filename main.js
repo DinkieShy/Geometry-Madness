@@ -18,6 +18,9 @@ Point.prototype.draw = function(ctx){
 	ctx.beginPath();
 	ctx.arc(this.x, this.y, 10, 0, 2*Math.PI);
 	ctx.fill();
+	ctx.fillStyle = '#FFFFFF';
+	ctx.font = "16pt Courier-New";
+	ctx.fillText(points.indexOf(this), this.x + 15, this.y - 15);
 }
 
 Point.prototype.drawEdges = function(ctx){
