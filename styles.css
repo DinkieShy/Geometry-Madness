@@ -63,3 +63,7 @@ body{
 	border-top-right-radius: 10px;
 	background-color: #505050;
 }
+
+#fileInput{
+	display: none;
+}
