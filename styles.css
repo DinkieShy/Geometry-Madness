@@ -10,30 +10,50 @@ body{
 #cmdbar{
 	position:absolute;
 	bottom: 0px;
-	width: 100%;
-	height: 5%;
-	background-color: coral;
+	width: 100vw;
+	height: 75px;
+	background-color: #505050;
+	padding: 10px;
+	box-sizing: border-box;
 }
 
 #btns-row{
 	display:flex;
 	flex-direction: row;
 	justify-content: flex-start;
-	transform: translateY(50%);
-	padding-left: 10px;
 }
 
 .cmdbar-btn{
 	flex-basis: 10%;
-	background-color: cyan;
-	color: red;
+	background-color: #C0C0C0;
+	color: black;
 	border: none;
 	text-align: center;
+	vertical-align: center;
 	cursor: pointer;
-	padding-bottom:10px;
+	padding: 5px;
 	margin-right: 10px;
+	height: 55px;
 }
 
 .cmdbar-btn:hover{
-	background-color: #000000;
+	background-color: #FFFFFF;
+}
+
+#downloadAnchor{
+	display: none;
+}
+
+#cmdbar-hider{
+	position: absolute;
+	left: 50%;
+	top: -50%;
+	transform: translate(-50%, 50%);
+	padding: 5px;
+	width: 100px;
+	text-align: center;
+	box-sizing: border-box;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	background-color: #505050;
 }
