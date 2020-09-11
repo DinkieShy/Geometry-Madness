@@ -101,6 +101,24 @@ function expandShapeFile(normalisedPoints){
 	}
 }
 
+TASKBAR_UP = true; //starts up
+
+function toggleTaskbar(){
+	if(TASKBAR_UP){
+		$('#cmdbar').animate({
+			"bottom": "-75px"
+		}, 750);
+		$('#cmdbar-hider')[0].innerHTML = "/\\";
+	}
+	else{
+		$('#cmdbar').animate({
+			"bottom": "0px"
+		}, 750);
+		$('#cmdbar-hider')[0].innerHTML = "\\/";
+	}
+	TASKBAR_UP = !TASKBAR_UP;
+}
+
 selectedPoint = -1;
 
 DEFAULT_FILL = '#C00000';
@@ -199,5 +217,7 @@ $(function(){
 	});
 
 	$('#downloadButton')[0].onclick = createShapeFile;
+
+	$('#cmdbar-hider')[0].onclick = toggleTaskbar;
 
 });
