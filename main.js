@@ -9,12 +9,14 @@ function Point(x, y){
 	this.y = y;
 	this.neighbours = [];
 	this.fill = DEFAULT_FILL;
+	this.moved = false;
+	this.dragging = false;
 }
 
 Point.prototype.draw = function(ctx){
 	ctx.fillStyle = this.fill;
 	ctx.beginPath();
-	ctx.arc(this.x, this.y, 20, 0, 2*Math.PI);
+	ctx.arc(this.x, this.y, 10, 0, 2*Math.PI);
 	ctx.fill();
 }
 
@@ -33,7 +35,7 @@ Point.prototype.contains = function(mouseX, mouseY){
 	xDif = this.x - mouseX;
 	yDif = this.y - mouseY;
 
-	if(xDif*xDif + yDif*yDif <= 400){
+	if(xDif*xDif + yDif*yDif <= 100){
 		return true;
   }
   else{
@@ -59,7 +61,7 @@ function draw(){
 }
 
 function addNeighbour(point2){
-	if(!points[selectedPoint].neighbours.includes(point2) && !points[point2].neighbours.includes(selectedPoint)){
+	if(!points[selectedPoint].neighbours.includes(point2) && !points[point2].neighbours.includes(selectedPoint) && selectedPoint != point2){
 		points[selectedPoint].neighbours.push(point2);
 	}	
 	points[selectedPoint].fill = DEFAULT_FILL;
@@ -70,6 +72,7 @@ selectedPoint = -1;
 
 DEFAULT_FILL = '#C00000';
 SELECTED_FILL = '#0000C0';
+DEADZONE = 10;
 
 $(function(){
 	console.log("init");
@@ -106,23 +109,59 @@ $(function(){
 			points[selectedPoint].fill = DEFAULT_FILL;
 			selectedPoint = -1;
 		}
-		
 	});
 
 	canvas.addEventListener('mousedown', function(e){
 		e.preventDefault();
+		foundExisting = false
 		for(var i = 0; i < points.length; i++){
-			if(selectedPoint != i & points[i].contains(e.clientX, e.clientY)){
+			if(points[i].contains(e.clientX, e.clientY)){
+				foundExisting = true;
 				if(selectedPoint == -1){
 					selectedPoint = i;
 					points[i].fill = SELECTED_FILL;
+					points[i].dragging = true;
 				}
 				else{
-					addNeighbour(i)
+					addNeighbour(i);
 				}
 				break;
 			}
 		}
+		if(!foundExisting && selectedPoint != -1){
+			points[selectedPoint].fill = DEFAULT_FILL;
+			selectedPoint = -1;
+		}
 	});	
+
+	canvas.addEventListener('mousemove', function(e){
+		e.preventDefault();
+		if(selectedPoint != -1 && points[selectedPoint].dragging){
+			if(!points[selectedPoint].moved){
+				xDif = points[selectedPoint].x - e.clientX;
+				yDif = points[selectedPoint].y - e.clientY;
+
+				if(xDif*xDif + yDif*yDif >= DEADZONE*DEADZONE){
+					points[selectedPoint].moved = true;
+				}
+			}
+
+			if(points[selectedPoint].moved){
+				points[selectedPoint].x = e.clientX;
+				points[selectedPoint].y = e.clientY;
+			}
+		}
+	});
+
+	canvas.addEventListener('mouseup', function(e){
+		e.preventDefault();
+		if(selectedPoint != -1){
+			points[selectedPoint].dragging = false;
+			if(points[selectedPoint].moved){
+				points[selectedPoint].fill = DEFAULT_FILL;
+				selectedPoint = -1;
+			}
+		}
+	});
 
 });
