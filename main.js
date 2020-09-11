@@ -66,7 +66,13 @@ function draw(){
 function addNeighbour(point2){
 	if(!points[selectedPoint].neighbours.includes(point2) && !points[point2].neighbours.includes(selectedPoint) && selectedPoint != point2){
 		points[selectedPoint].neighbours.push(point2);
-	}	
+	}
+	else if(selectedPoint != point2 && points[selectedPoint].neighbours.includes(point2)){
+		points[selectedPoint].neighbours.splice(points[selectedPoint].neighbours.indexOf(point2), 1);
+	}
+	else if(selectedPoint != point2 && points[point2].neighbours.includes(point2)){
+		points[point2].neighbours.splice(points[point2].neighbours.indexOf(selectedPoint), 1);
+	}
 	points[selectedPoint].fill = DEFAULT_FILL;
 	selectedPoint = -1;
 }
