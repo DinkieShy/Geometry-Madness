@@ -102,6 +102,7 @@ function expandShapeFile(normalisedPoints){
 }
 
 function fileLoaded(event){
+	points = [];
 	expandShapeFile(JSON.parse(event.target.result));
 }
 
