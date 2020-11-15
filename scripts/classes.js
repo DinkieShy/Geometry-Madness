@@ -18,32 +18,21 @@ class Point {
 		ctx.beginPath();
 		ctx.arc(this.x, this.y, 10, 0, 2*Math.PI);
 		ctx.fill();
+		
 		ctx.fillStyle = '#FFFFFF';
-		//ctx.font = "16pt Courier-New";
-		//ctx.fillText(points.indexOf(this), this.x + 15, this.y - 15);
-	}
-	
-	drawEdges(ctx) {
-		ctx.strokeStyle = '#FFFFFF';
-		for(var i = 0; i < this.neighbours.length; i++){
-			neighbour = points[this.neighbours[i]]
-			ctx.beginPath()
-			ctx.moveTo(this.x, this.y)
-			ctx.lineTo(neighbour.x, neighbour.y);
-			ctx.stroke()
-		}
 	}
 
+
 	contains(mouseX, mouseY) {
-		xDif = this.x - mouseX;
-		yDif = this.y - mouseY;
+		let xDif = this.x - mouseX;
+		let yDif = this.y - mouseY;
 	
 		if(xDif*xDif + yDif*yDif <= 100){
 			return true;
-	  }
-	  else{
-		return false;
-	  }
+		}
+		else{
+			return false;
+		}
 	}
 }
 
@@ -78,11 +67,15 @@ class Shape {
 	constructor() {
 		this.points = [];
 		this.edges = [];
+
+		this.selectedPoint = null;
 	}
 
 	draw(ctx) {
 		for(const point of this.points) {
 			point.draw(ctx);
+			//ctx.font = "16pt Courier-New";
+			//ctx.fillText(this.points.indexOf(point), point.x + 15, point.y - 15);
 		}
 
 		for(const edge of this.edges) {
