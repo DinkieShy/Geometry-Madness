@@ -4,6 +4,8 @@ const FILLS = {
 	SELECTED_FILL: '#0000C0'	
 };
 
+const DEADZONE = 10;
+
 class Point {
 
     constructor(x, y, neighbours = []) {
@@ -95,6 +97,8 @@ class Shape {
 
 	addEdge(p1, p2) {
 		this.edges.push(new Edge(p1, p2));
+		console.log("Added new edge between (", p1.x, ", ", p1.y, ") and (", p2.x, ", ", p2.y, ")");
+		console.log(this.edges);
 	}
 
 	selectPoint(x, y) {
@@ -104,13 +108,12 @@ class Shape {
 					this.selectedPoint = point;
 					point.fill = FILLS.SELECTED_FILL;
 					point.dragging = true;
-					return true;
 				} else if (point == this.selectedPoint) {
 					this.selectedPoint = null;
 					point.fill = FILLS.DEFAULT_FILL;
 					point.dragging = false;
-					return true;
 				}
+				return true;
 			}
 		}
 		
@@ -122,7 +125,51 @@ class Shape {
 		
 		return false;
 	}
+
+	dragPoint(x, y) {
+		if(this.selectedPoint && this.selectedPoint.dragging) {
+			if(!this.selectedPoint.moved) {
+				let xDif = this.selectedPoint.x - x;
+				let yDif = this.selectedPoint.y - y;
+
+				if(xDif*xDif + yDif*yDif >= DEADZONE * DEADZONE){
+					this.selectedPoint.moved = true;
+				}
+			}
+
+			if(this.selectedPoint.moved) {
+				this.selectedPoint.x = x;
+				this.selectedPoint.y = y;
+			}
+		}
+	}
+
+	stopDraggingPoint() {
+		if(this.selectedPoint) {
+			this.selectedPoint.dragging = false;
+			if(this.selectedPoint.moved) {
+				this.selectedPoint.fill = FILLS.DEFAULT_FILL;
+				this.selectedPoint.moved = false;
+				this.selectedPoint = null;
+			}
+		}
+		
+	}
 }
+
+/*
+	canvas.addEventListener('mouseup', function(e){
+		e.preventDefault();
+		if(selectedPoint != -1){
+			points[selectedPoint].dragging = false;
+			if(points[selectedPoint].moved){
+				points[selectedPoint].fill = DEFAULT_FILL;
+				points[selectedPoint].moved = false;
+				selectedPoint = -1;
+			}
+		}
+	});
+    */
 
 /*
 function Point(x, y, neighbours = []){

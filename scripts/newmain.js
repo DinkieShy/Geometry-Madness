@@ -6,12 +6,6 @@ let shape = new Shape();
 let WIDTH;
 let HEIGHT;
 
-let selectedPoint = -1;
-
-const DEFAULT_FILL = '#C00000';
-const SELECTED_FILL = '#0000C0';
-const DEADZONE = 10;
-
 TASKBAR_UP = true; //starts up
 
 function toggleTaskbar(){
@@ -62,12 +56,88 @@ $(function(){
 
     canvas.addEventListener('mousedown', function(e) {
 		e.preventDefault();
+		shape.selectPoint(e.clientX, e.clientY);
+	});
+	
+	canvas.addEventListener('mousemove', function(e) {
+		e.preventDefault();
+		shape.dragPoint(e.clientX, e.clientY);
+	});
 
-		if(!shape.selectPoint(e.clientX, e.clientY)) {
-
-		}
-    });
+	canvas.addEventListener('mouseup', function(e) {
+		e.preventDefault();
+		shape.stopDraggingPoint();
+	});
 });
+
+
+
+    /*
+	$('#downloadButton')[0].onclick = createShapeFile;
+
+	$('#cmdbar-hider')[0].onclick = toggleTaskbar;
+
+	$('#uploadButton')[0].onclick = function(){
+		$('#fileInput').click();
+    }
+    */
+
+
+/*
+
+function addNeighbour(point2){
+	if(!points[selectedPoint].neighbours.includes(point2) && !points[point2].neighbours.includes(selectedPoint) && selectedPoint != point2){
+		points[selectedPoint].neighbours.push(point2);
+	}
+	else if(selectedPoint != point2 && points[selectedPoint].neighbours.includes(point2)){
+		points[selectedPoint].neighbours.splice(points[selectedPoint].neighbours.indexOf(point2), 1);
+	}
+	else if(selectedPoint != point2 && points[point2].neighbours.includes(selectedPoint)){
+		points[point2].neighbours.splice(points[point2].neighbours.indexOf(selectedPoint), 1);
+	}
+	points[selectedPoint].fill = DEFAULT_FILL;
+	selectedPoint = -1;
+}*/
+/* worry bout this later
+function createShapeFile(){
+	normalisedPoints = []
+	for(var i = 0; i < points.length; i++){
+		normalisedPoints.push(new NormalisedPoint(points[i]));
+	}
+	dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(normalisedPoints));
+	downloadElem = $('#downloadanchor')[0];
+	downloadElem.href = dataStr;
+	downloadElem.download = "shape.json";
+	downloadElem.click();
+}
+
+function expandShapeFile(normalisedPoints){
+	for(var i = 0; i < normalisedPoints.length; i++){
+		points.push(new Point(normalisedPoints[i].x*WIDTH, normalisedPoints[i].y*HEIGHT, normalisedPoints[i].neighbours));
+	}
+}
+
+function fileLoaded(event){
+	points = [];
+	expandShapeFile(JSON.parse(event.target.result));
+}
+
+function chooseFile(event) {
+    if (typeof window.FileReader !== 'function')
+        throw ("The file API isn't supported on this browser.");
+    let input = event.target;
+    if (!input)
+        throw ("The browser does not properly implement the event object");
+    if (!input.files)
+        throw ("This browser does not support the `files` property of the file input.");
+    if (!input.files[0])
+        return undefined;
+    let file = input.files[0];
+    let fr = new FileReader();
+    fr.onload = fileLoaded;
+    fr.readAsText(file);
+}
+*/
 
 
 /*
@@ -135,82 +205,4 @@ $(function(){
 			}
 		}
 	});
-
-	canvas.addEventListener('mouseup', function(e){
-		e.preventDefault();
-		if(selectedPoint != -1){
-			points[selectedPoint].dragging = false;
-			if(points[selectedPoint].moved){
-				points[selectedPoint].fill = DEFAULT_FILL;
-				points[selectedPoint].moved = false;
-				selectedPoint = -1;
-			}
-		}
-	});
-    */
-    /*
-	$('#downloadButton')[0].onclick = createShapeFile;
-
-	$('#cmdbar-hider')[0].onclick = toggleTaskbar;
-
-	$('#uploadButton')[0].onclick = function(){
-		$('#fileInput').click();
-    }
-    */
-
-
-/*
-
-function addNeighbour(point2){
-	if(!points[selectedPoint].neighbours.includes(point2) && !points[point2].neighbours.includes(selectedPoint) && selectedPoint != point2){
-		points[selectedPoint].neighbours.push(point2);
-	}
-	else if(selectedPoint != point2 && points[selectedPoint].neighbours.includes(point2)){
-		points[selectedPoint].neighbours.splice(points[selectedPoint].neighbours.indexOf(point2), 1);
-	}
-	else if(selectedPoint != point2 && points[point2].neighbours.includes(selectedPoint)){
-		points[point2].neighbours.splice(points[point2].neighbours.indexOf(selectedPoint), 1);
-	}
-	points[selectedPoint].fill = DEFAULT_FILL;
-	selectedPoint = -1;
-}*/
-/* worry bout this later
-function createShapeFile(){
-	normalisedPoints = []
-	for(var i = 0; i < points.length; i++){
-		normalisedPoints.push(new NormalisedPoint(points[i]));
-	}
-	dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(normalisedPoints));
-	downloadElem = $('#downloadanchor')[0];
-	downloadElem.href = dataStr;
-	downloadElem.download = "shape.json";
-	downloadElem.click();
-}
-
-function expandShapeFile(normalisedPoints){
-	for(var i = 0; i < normalisedPoints.length; i++){
-		points.push(new Point(normalisedPoints[i].x*WIDTH, normalisedPoints[i].y*HEIGHT, normalisedPoints[i].neighbours));
-	}
-}
-
-function fileLoaded(event){
-	points = [];
-	expandShapeFile(JSON.parse(event.target.result));
-}
-
-function chooseFile(event) {
-    if (typeof window.FileReader !== 'function')
-        throw ("The file API isn't supported on this browser.");
-    let input = event.target;
-    if (!input)
-        throw ("The browser does not properly implement the event object");
-    if (!input.files)
-        throw ("This browser does not support the `files` property of the file input.");
-    if (!input.files[0])
-        return undefined;
-    let file = input.files[0];
-    let fr = new FileReader();
-    fr.onload = fileLoaded;
-    fr.readAsText(file);
-}
 */
