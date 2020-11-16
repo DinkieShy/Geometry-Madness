@@ -157,29 +157,8 @@ class Shape {
 	}
 }
 
-/*
-	canvas.addEventListener('mouseup', function(e){
-		e.preventDefault();
-		if(selectedPoint != -1){
-			points[selectedPoint].dragging = false;
-			if(points[selectedPoint].moved){
-				points[selectedPoint].fill = DEFAULT_FILL;
-				points[selectedPoint].moved = false;
-				selectedPoint = -1;
-			}
-		}
-	});
-    */
 
 /*
-function Point(x, y, neighbours = []){
-	this.x = x;
-	this.y = y;
-	this.neighbours = neighbours;
-	this.fill = DEFAULT_FILL;
-	this.moved = false;
-	this.dragging = false;
-}
 
 function NormalisedPoint(point){
 	this.x = point.x/WIDTH;
@@ -187,10 +166,6 @@ function NormalisedPoint(point){
 	this.neighbours = point.neighbours;
 }
 
-
-Point.prototype.draw = function(ctx){
-	
-}
 
 Point.prototype.drawEdges = function(ctx){
 	ctx.strokeStyle = '#FFFFFF';
@@ -202,15 +177,4 @@ Point.prototype.drawEdges = function(ctx){
 		ctx.stroke()
 	}
 }
-
-Point.prototype.contains = function(mouseX, mouseY){
-	xDif = this.x - mouseX;
-	yDif = this.y - mouseY;
-
-	if(xDif*xDif + yDif*yDif <= 100){
-		return true;
-  }
-  else{
-    return false;
-  }
-}*/
+*/

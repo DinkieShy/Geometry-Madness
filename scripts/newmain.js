@@ -8,6 +8,13 @@ let HEIGHT;
 
 TASKBAR_UP = true; //starts up
 
+const MOUSE_BUTTONS = {
+	LEFT: 0,
+	MIDDLE: 1,
+	RIGHT: 2,
+	UNKNOWN: 3
+}
+
 function toggleTaskbar(){
 	if(TASKBAR_UP){
 		$('#cmdbar').animate({
@@ -24,28 +31,33 @@ function toggleTaskbar(){
 	TASKBAR_UP = !TASKBAR_UP;
 }
 
+function getMouseButton(e) {
+	if(typeof e === 'object') {
+		return e.button;
+	}
+}
+
 function draw(){
-    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 	shape.draw(ctx);
 }
 
-
 $(function(){
 	console.log("init");
-
-	WIDTH = window.innerWidth;
-	HEIGHT = window.innerHeight;
-
+	
 	canvas = $('#canvas')[0];
 
-	canvas.width = WIDTH;
-    canvas.height = HEIGHT;
+	canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     
-
 	ctx = canvas.getContext('2d');
-    setInterval(draw, 16);
+	setInterval(draw, 16);
+	
+	window.addEventListener('resize', function() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }, false);
     
-
     canvas.addEventListener('dblclick', function(e){        // add new point on double click
 		e.preventDefault();
 
@@ -54,19 +66,33 @@ $(function(){
 		}
     });
 
-    canvas.addEventListener('mousedown', function(e) {
+    canvas.addEventListener('mousedown', function(e) {		// select point on single click
 		e.preventDefault();
-		shape.selectPoint(e.clientX, e.clientY);
+
+		let mouseButton = getMouseButton(e);
+
+		switch(mouseButton) {
+			case MOUSE_BUTTONS.MIDDLE:
+				// new edge
+				break;
+			default:
+				shape.selectPoint(e.clientX, e.clientY);
+
+		}
 	});
 	
-	canvas.addEventListener('mousemove', function(e) {
+	canvas.addEventListener('mousemove', function(e) {		// drag point
 		e.preventDefault();
 		shape.dragPoint(e.clientX, e.clientY);
 	});
 
-	canvas.addEventListener('mouseup', function(e) {
+	canvas.addEventListener('mouseup', function(e) {		// deselect point
 		e.preventDefault();
 		shape.stopDraggingPoint();
+	});
+
+	canvas.addEventListener('contextmenu', function(e) {	// something..
+		e.preventDefault();
 	});
 });
 
@@ -137,72 +163,4 @@ function chooseFile(event) {
     fr.onload = fileLoaded;
     fr.readAsText(file);
 }
-*/
-
-
-/*
-	canvas.addEventListener('dblclick', function(e){
-		e.preventDefault();
-		foundExisting = false;
-
-		for(var i = 0; i < points.length; i++){
-			if(points[i].contains(e.clientX, e.clientY)){
-				foundExisting = true;
-				if(selectedPoint != -1){
-					addNeighbour(i)
-				}
-				return;
-			}
-		}
-		
-		if(selectedPoint == -1){
-			addNewPoint(e.clientX, e.clientY);
-		}
-		else{
-			points[selectedPoint].fill = DEFAULT_FILL;
-			selectedPoint = -1;
-		}
-	});
-
-	canvas.addEventListener('mousedown', function(e){
-		e.preventDefault();
-		foundExisting = false
-		for(var i = 0; i < points.length; i++){
-			if(points[i].contains(e.clientX, e.clientY)){
-				foundExisting = true;
-				if(selectedPoint == -1){
-					selectedPoint = i;
-					points[i].fill = SELECTED_FILL;
-					points[i].dragging = true;
-				}
-				else{
-					addNeighbour(i);
-				}
-				return;
-			}
-		}
-		if(!foundExisting && selectedPoint != -1){
-			points[selectedPoint].fill = DEFAULT_FILL;
-			selectedPoint = -1;
-		}
-	});	
-
-	canvas.addEventListener('mousemove', function(e){
-		e.preventDefault();
-		if(selectedPoint != -1 && points[selectedPoint].dragging){
-			if(!points[selectedPoint].moved){
-				xDif = points[selectedPoint].x - e.clientX;
-				yDif = points[selectedPoint].y - e.clientY;
-
-				if(xDif*xDif + yDif*yDif >= DEADZONE*DEADZONE){
-					points[selectedPoint].moved = true;
-				}
-			}
-
-			if(points[selectedPoint].moved){
-				points[selectedPoint].x = e.clientX;
-				points[selectedPoint].y = e.clientY;
-			}
-		}
-	});
 */
