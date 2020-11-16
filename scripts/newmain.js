@@ -53,24 +53,18 @@ $(function(){
     
 
     canvas.addEventListener('dblclick', function(e){        // add new point on double click
-        e.preventDefault();
+		e.preventDefault();
 
-        if(selectedPoint == -1) {
-            shape.addPoint(e.clientX, e.clientY);
-        }
+		if(!shape.selectPoint(e.clientX, e.clientY)) {
+			shape.addPoint(e.clientX, e.clientY);
+		}
     });
 
     canvas.addEventListener('mousedown', function(e) {
 		e.preventDefault();
 
-		for(const point of shape.points) {
-			if(point.contains(e.clientX, e.clientY)) {
-				if(!shape.selectedPoint) {
-					shape.selectedPoint = point;
-					point.fill = SELECTED_FILL;
-					point.dragging = true;
-				}
-			}
+		if(!shape.selectPoint(e.clientX, e.clientY)) {
+
 		}
     });
 });

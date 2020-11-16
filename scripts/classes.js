@@ -1,4 +1,8 @@
 // Yes, I'm going to be pedantic. Shush.
+const FILLS = {
+	DEFAULT_FILL: '#C00000',
+	SELECTED_FILL: '#0000C0'	
+};
 
 class Point {
 
@@ -91,6 +95,32 @@ class Shape {
 
 	addEdge(p1, p2) {
 		this.edges.push(new Edge(p1, p2));
+	}
+
+	selectPoint(x, y) {
+		for(const point of this.points) {
+			if(point.contains(x, y)) {
+				if(!this.selectedPoint) {
+					this.selectedPoint = point;
+					point.fill = FILLS.SELECTED_FILL;
+					point.dragging = true;
+					return true;
+				} else if (point == this.selectedPoint) {
+					this.selectedPoint = null;
+					point.fill = FILLS.DEFAULT_FILL;
+					point.dragging = false;
+					return true;
+				}
+			}
+		}
+		
+		if(this.selectedPoint) {
+			this.selectedPoint.fill = FILLS.DEFAULT_FILL;
+			this.selectedPoint.dragging = false;
+			this.selectedPoint = null;
+		}
+		
+		return false;
 	}
 }
 
