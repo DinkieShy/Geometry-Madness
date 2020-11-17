@@ -3,9 +3,6 @@
 let ctx = "";
 let shape = new Shape();
 
-let WIDTH;
-let HEIGHT;
-
 TASKBAR_UP = true; //starts up
 
 const MOUSE_BUTTONS = {
@@ -40,11 +37,12 @@ function getMouseButton(e) {
 function draw(){
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 	shape.draw(ctx);
+	//console.log(shape.selectedPoint.dragging);
 }
 
 $(function(){
 	console.log("init");
-	
+
 	canvas = $('#canvas')[0];
 
 	canvas.width = window.innerWidth;
@@ -68,17 +66,7 @@ $(function(){
 
     canvas.addEventListener('mousedown', function(e) {		// select point on single click
 		e.preventDefault();
-
-		let mouseButton = getMouseButton(e);
-
-		switch(mouseButton) {
-			case MOUSE_BUTTONS.MIDDLE:
-				// new edge
-				break;
-			default:
-				shape.selectPoint(e.clientX, e.clientY);
-
-		}
+		shape.selectPoint(e.clientX, e.clientY);
 	});
 	
 	canvas.addEventListener('mousemove', function(e) {		// drag point
@@ -88,7 +76,7 @@ $(function(){
 
 	canvas.addEventListener('mouseup', function(e) {		// deselect point
 		e.preventDefault();
-		shape.stopDraggingPoint();
+		shape.stopDraggingPoint(e.clientX, e.clientY);
 	});
 
 	canvas.addEventListener('contextmenu', function(e) {	// something..

@@ -16,16 +16,15 @@ class Point {
         this.dragging = false;
 
 		this.neighbours = neighbours;
+		this.fill = FILLS.DEFAULT_FILL;
 
     }
 
-    draw(ctx) {	//old functions VVV
+    draw(ctx) {		// render to canvas
 		ctx.fillStyle = this.fill;
 		ctx.beginPath();
 		ctx.arc(this.x, this.y, 10, 0, 2*Math.PI);
 		ctx.fill();
-		
-		ctx.fillStyle = '#FFFFFF';
 	}
 
 
@@ -59,8 +58,8 @@ class Edge {
 	draw(ctx) {
 		ctx.strokeStyle = '#FFFFFF';
 		ctx.beginPath();
-		ctx.moveTo(p1.x, p1.y);
-		ctx.lineTo(p2.x, p2.y);
+		ctx.moveTo(this.p1.x, this.p1.y);
+		ctx.lineTo(this.p2.x, this.p2.y);
 		ctx.stroke();
 	}
 }
@@ -75,6 +74,7 @@ class Shape {
 		this.edges = [];
 
 		this.selectedPoint = null;
+		this.drawingNewEdge = null;
 	}
 
 	draw(ctx) {
@@ -93,12 +93,22 @@ class Shape {
 		this.points.push(new Point(x, y));
 		console.log("Added new point", x, y);
 		console.log(this.points);
+		return this.points[this.points.length - 1];
 	}
 
 	addEdge(p1, p2) {
 		this.edges.push(new Edge(p1, p2));
 		console.log("Added new edge between (", p1.x, ", ", p1.y, ") and (", p2.x, ", ", p2.y, ")");
 		console.log(this.edges);
+		return this.edges[this.edges.length - 1];
+	}
+
+	buildEdge() {
+
+	}
+
+	dragEdge() {
+		
 	}
 
 	selectPoint(x, y) {
@@ -112,6 +122,9 @@ class Shape {
 					this.selectedPoint = null;
 					point.fill = FILLS.DEFAULT_FILL;
 					point.dragging = false;
+				} else if (this.drawingNewEdge) {
+					this.drawingNewEdge.p2 = point;
+					this.drawingNewEdge = null;
 				}
 				return true;
 			}
@@ -134,7 +147,7 @@ class Shape {
 
 				if(xDif*xDif + yDif*yDif >= DEADZONE * DEADZONE){
 					this.selectedPoint.moved = true;
-				}
+				} 
 			}
 
 			if(this.selectedPoint.moved) {
@@ -142,15 +155,23 @@ class Shape {
 				this.selectedPoint.y = y;
 			}
 		}
+
+		if(this.drawingNewEdge) {
+			this.drawingNewEdge.p2 = {x: x, y: y};
+		}
 	}
 
-	stopDraggingPoint() {
+	stopDraggingPoint(x, y) {
 		if(this.selectedPoint) {
 			this.selectedPoint.dragging = false;
 			if(this.selectedPoint.moved) {
 				this.selectedPoint.fill = FILLS.DEFAULT_FILL;
 				this.selectedPoint.moved = false;
 				this.selectedPoint = null;
+			} else {
+				if(!this.drawingNewEdge) {
+					this.drawingNewEdge = this.addEdge(this.selectedPoint, {x: x, y: y});
+				}
 			}
 		}
 		
