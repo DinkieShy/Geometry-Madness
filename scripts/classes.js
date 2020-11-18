@@ -57,7 +57,14 @@ class NormalisedPoint extends Point {
 }
 
 class Witness extends Point {
+	constructor(x, y, neighbours = []) {
+		super(x, y, neighbours);
+	}
 
+	draw() {
+		// need to draw witness point visibility
+
+	}
 }
 
 class Edge {
@@ -79,25 +86,44 @@ class WingedEdge {
 
 }
 
+class BoundingBox {
+	constructor(startPt, endPt) {
+		let slope = (startPt.x - endPt.x)/(startPt.y - endPt.y);
+
+		if(startPt.x - endPt.x > 0) {
+			// start pt higher
+		}
+		
+	}
+
+	withinBound(point) {
+		
+	}
+}
+
 class Shape {
 	constructor() {
 		this.points = [];
 		this.edges = [];
 
+
+		this.selection = null;
+
+
 		this.selectedPoint = null;
 		this.drawingNewEdge = null;
+
+		// this is doing too much methinks.
 	}
 
 	draw(ctx) {
-		for(const point of this.points) {
-			point.draw(ctx);
-			//ctx.font = "16pt Courier-New";
-			//ctx.fillText(this.points.indexOf(point), point.x + 15, point.y - 15);
-		}
-
 		for(const edge of this.edges) {
 			edge.draw(ctx);
 		}
+
+		for(const point of this.points) {
+			point.draw(ctx);
+		}	
 	}
 
 	addPoint(x, y) {
@@ -114,33 +140,26 @@ class Shape {
 		return this.edges[this.edges.length - 1];
 	}
 
-	buildEdge() {
-
-	}
-
-	dragEdge() {
-		
-	}
-
 	selectPoint(x, y) {
-		for(const point of this.points) {
-			if(point.contains(x, y)) {
-				if(!this.selectedPoint) {
+		for(const point of this.points) {	// go through all points
+			if(point.contains(x, y)) {		// if mouse is within point
+				if(!this.selectedPoint) {		// select that point
 					this.selectedPoint = point;
 					point.fill = FILLS.SELECTED_FILL;
 					point.dragging = true;
-				} else if (point == this.selectedPoint) {
+
+				} else if (point == this.selectedPoint) {	// or deselect same point
 					this.selectedPoint = null;
 					point.fill = FILLS.DEFAULT_FILL;
 					point.dragging = false;
-				} else if (this.drawingNewEdge) {
+
+				} else if (this.drawingNewEdge) {		// add an edge
 					if(!point.neighbours.includes(this.drawingNewEdge.p1)) {
 						this.drawingNewEdge.p2 = point;
 
 						this.drawingNewEdge.p1.neighbours.push(point);
 						point.neighbours.push(this.drawingNewEdge.p1);	// neighbor each other
 
-						
 						this.drawingNewEdge = null;	// drawing edge becomes actual edge
 					} 
 				}
@@ -148,16 +167,18 @@ class Shape {
 			}
 		}
 		
-		if(this.selectedPoint) {
+		if(this.selectedPoint) {		// deselect a point
 			this.selectedPoint.fill = FILLS.DEFAULT_FILL;
 			this.selectedPoint.dragging = false;
 			this.selectedPoint = null;
 		}
 
-		if(this.drawingNewEdge) {
+		if(this.drawingNewEdge) {		// remove the mouse - point edge
 			this.edges.splice(this.edges.indexOf(this.drawingNewEdge), 1);
 			this.drawingNewEdge = null;
 		}
+
+
 		
 		return false;
 	}
@@ -197,7 +218,14 @@ class Shape {
 				}
 			}
 		}
-		
+	}
+
+	sortPoints() {
+
+	}
+
+	sortEdges() {
+
 	}
 }
 
