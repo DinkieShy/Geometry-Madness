@@ -8,6 +8,8 @@ const DEADZONE = 10;
 
 class Point {
 
+	static count = 0;
+
     constructor(x, y, neighbours = []) {
         this.x = x;
         this.y = y;
@@ -17,6 +19,7 @@ class Point {
 
 		this.neighbours = neighbours;
 		this.fill = FILLS.DEFAULT_FILL;
+		this.index = Point.count++;
 
     }
 
@@ -25,6 +28,10 @@ class Point {
 		ctx.beginPath();
 		ctx.arc(this.x, this.y, 10, 0, 2*Math.PI);
 		ctx.fill();
+
+		ctx.fillStyle = '#FFFFFF';
+		ctx.font = "16pt Courier-New";
+		ctx.fillText(this.index, this.x + 15, this.y - 15);
 	}
 
 
