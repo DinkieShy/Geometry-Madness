@@ -39,6 +39,10 @@ class Point {
 			return false;
 		}
 	}
+
+	static equals(p1, p2) {
+		return (p1.x == p2.x) && (p1.y == p2.y);
+	}
 }
 
 class NormalisedPoint extends Point {
@@ -123,8 +127,15 @@ class Shape {
 					point.fill = FILLS.DEFAULT_FILL;
 					point.dragging = false;
 				} else if (this.drawingNewEdge) {
-					this.drawingNewEdge.p2 = point;
-					this.drawingNewEdge = null;
+					if(!point.neighbours.includes(this.drawingNewEdge.p1)) {
+						this.drawingNewEdge.p2 = point;
+
+						this.drawingNewEdge.p1.neighbours.push(point);
+						point.neighbours.push(this.drawingNewEdge.p1);	// neighbor each other
+
+						
+						this.drawingNewEdge = null;	// drawing edge becomes actual edge
+					} 
 				}
 				return true;
 			}
@@ -134,6 +145,11 @@ class Shape {
 			this.selectedPoint.fill = FILLS.DEFAULT_FILL;
 			this.selectedPoint.dragging = false;
 			this.selectedPoint = null;
+		}
+
+		if(this.drawingNewEdge) {
+			this.edges.splice(this.edges.indexOf(this.drawingNewEdge), 1);
+			this.drawingNewEdge = null;
 		}
 		
 		return false;
