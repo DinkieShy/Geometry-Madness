@@ -13,7 +13,8 @@ const MOUSE_BUTTONS = {
 const USER_STATES = {	// what the fuck is the user doing
 	DEFAULT: 0,
 	SELECT: 1,
-	MULTISELECT: 2
+	MULTISELECT: 2,
+	MULTIDRAG: 3
 }
 
 function getMouseButton(e) {
@@ -97,6 +98,10 @@ $(function() {
 						userState = USER_STATES.SELECT;
 					}
 
+				} else if (userState == USER_STATES.MULTIDRAG) {
+				
+				// uhhhhhhhh...
+				
 				} else {
 					//userObj.deselect();									// watch out for this nonsense later
 					userObj = null;
@@ -121,6 +126,11 @@ $(function() {
 
 			} else if (userState == USER_STATES.MULTISELECT) {
 				userObj.move(e.clientX, e.clientY);						// oo this is a bad idea
+
+			} else if (userState == USER_STATES.MULTIDRAG) {
+				for(const point of userObj) {
+					point.move(e.clientX, e.clientY);
+				}
 			}
 
 			
@@ -140,7 +150,23 @@ $(function() {
 				userObj = null;
 
 			} else if (userState == USER_STATES.MULTISELECT) {
-				userState = USER_STATES.DEFAULT;
+
+				let selection = [];
+				for(let point of shape.points) {
+					if(userObj.contains(point)) {
+						point.select();
+						selection.push(point);
+					}
+				}
+
+				if(selection == []) {
+					toDraw.splice(toDraw.indexOf(userObj), 1);
+					userObj = null;
+					userState = USER_STATES.DEFAULT;
+				} else {
+					userObj = selection;
+					userState = USER_STATES.MULTIDRAG;
+				}
 			}
 
 			//shape.stopDraggingPoint(e.clientX, e.clientY);
@@ -168,10 +194,6 @@ $(function() {
 
 	
 	*/
-
-	let bb = new BoundingBox({x: 0, y: 0}, {x: 1, y: 1});
-
-
 });
 
 

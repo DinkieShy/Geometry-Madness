@@ -99,6 +99,8 @@ class Edge {
 	constructor(p1, p2) {
 		this.p1 = p1;
 		this.p2 = p2;
+
+		this.weight = null;
 	}
 
 	draw(ctx) {
@@ -116,11 +118,6 @@ class WingedEdge {
 
 class BoundingBox {
 	constructor(startPt, endPt) {
-
-		//if(startPt.x == endPt.x || startPt.y == endPt.y) {
-		//	return;	// just a line, no area to bound anything
-		//}
-
 		this.startPt = startPt;
 		this.endPt = endPt;
 
@@ -133,7 +130,8 @@ class BoundingBox {
 	}
 
 	makeRect() {
-		this.calculateBox();
+		this.minPt = {x: Math.min(this.startPt.x, this.endPt.x), y: Math.min(this.startPt.y, this.endPt.y)};
+		this.maxPt = {x: Math.max(this.startPt.x, this.endPt.x), y: Math.max(this.startPt.y, this.endPt.y)};
 
 		let width = this.maxPt.x - this.minPt.x;
 		let height = this.maxPt.y - this.minPt.y;
@@ -141,12 +139,7 @@ class BoundingBox {
 		return [this.minPt.x, this.minPt.y, width, height];
 	}
 
-	calculateBox() {
-		this.minPt = {x: Math.min(this.startPt.x, this.endPt.x), y: Math.min(this.startPt.y, this.endPt.y)};
-		this.maxPt = {x: Math.max(this.startPt.x, this.endPt.x), y: Math.max(this.startPt.y, this.endPt.y)};
-	}
-
-	withinBound(point) {
+	contains(point) {
 		return (point.x >= this.minPt.x && point.x <= this.maxPt.x &&
 			point.y >= this.minPt.y && point.y <= this.maxPt.y);
 	}
@@ -165,12 +158,7 @@ class Shape {
 		this.edges = [];
 
 
-		this.selection = null;
-
-
-		this.selectedPoint = null;
-		this.drawingNewEdge = null;
-
+		this.selection = [];
 		// this is doing too much methinks.
 	}
 
@@ -198,12 +186,11 @@ class Shape {
 		return this.edges[this.edges.length - 1];
 	}
 
-
-
 	selectPoint(x, y) {
 		for(const point of this.points) {	// go through all points
 			if(point.contains(x, y)) {		// if mouse is within point
 				point.select();
+				this.selection.push(point);
 				return point;
 			}
 		}
