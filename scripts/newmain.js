@@ -47,7 +47,8 @@ $(function(){
 
 	canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    
+	
+	/*
 	ctx = canvas.getContext('2d');
 	setInterval(draw, 16);
 	
@@ -82,6 +83,11 @@ $(function(){
 	canvas.addEventListener('contextmenu', function(e) {	// something..
 		e.preventDefault();
 	});
+	*/
+
+	let bb = new BoundingBox({x: 0, y: 0}, {x: 1, y: 1});
+
+
 });
 
 

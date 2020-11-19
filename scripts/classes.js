@@ -88,12 +88,13 @@ class WingedEdge {
 
 class BoundingBox {
 	constructor(startPt, endPt) {
-		let slope = (startPt.x - endPt.x)/(startPt.y - endPt.y);
 
-		if(startPt.x - endPt.x > 0) {
-			// start pt higher
+		if(startPt.x == endPt.x || startPt.y == endPt.y) {
+			return;	// just a line, no area to bound anything
 		}
-		
+
+		this.minPt = {x: Math.min(startPt.x, endPt.x), y: Math.min(startPt.y, endPt.y)};
+		this.maxPt = {x: Math.max(startPt.x, endPt.x), y: Math.max(startPt.y, endPt.y)};		
 	}
 
 	withinBound(point) {
