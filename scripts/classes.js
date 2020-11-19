@@ -190,7 +190,6 @@ class Shape {
 		for(const point of this.points) {	// go through all points
 			if(point.contains(x, y)) {		// if mouse is within point
 				point.select();
-				this.selection.push(point);
 				return point;
 			}
 		}

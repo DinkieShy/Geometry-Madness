@@ -1,4 +1,5 @@
 // do not question the section titles
+// no this isn't a mess thank you very much
 
 let ctx = "";
 let shape = new Shape();
@@ -14,7 +15,7 @@ const USER_STATES = {	// what the fuck is the user doing
 	DEFAULT: 0,
 	SELECT: 1,
 	MULTISELECT: 2,
-	MULTIDRAG: 3
+	DRAG: 3
 }
 
 function getMouseButton(e) {
@@ -58,22 +59,36 @@ $(function() {
 	}, false);
 
 	let userState = USER_STATES.DEFAULT;
-	let userObj = null;
+
+	let selectBox = null;
+	let userSelection = [];
 	
 	/*======================================
 	===( ╹▽╹ ) | INTERACTION! | ( ╹▽╹ )====
 	======================================*/
 
+	canvas.addEventListener('contextmenu', function(e) {	// remove context menu from canvas
+		e.preventDefault();
+	});
+	
 	canvas.addEventListener('dblclick', function(e){        // add new point on double click
 		e.preventDefault();
+		let mBtn = getMouseButton(e);
 
-		if(userState == USER_STATES.DEFAULT && !userObj) {
-			shape.addPoint(e.clientX, e.clientY);
+		switch(mBtn) {
+			case MOUSE_BUTTONS.LEFT:
+				if(userState == USER_STATES.DEFAULT) {
+					shape.addPoint(e.clientX, e.clientY);
+				}
+				break;
+			case MOUSE_BUTTONS.MIDDLE:
+				break;
+			case MOUSE_BUTTONS.RIGHT:
+				break;
+			default:
+				break;
 		}
-	});
-
-	canvas.addEventListener('contextmenu', function(e) {	// remove context menu
-		e.preventDefault();
+		
 	});
 	
 	canvas.addEventListener('mousedown', function(e) {		// single click
@@ -82,13 +97,33 @@ $(function() {
 
 		switch(mBtn) {
 			case MOUSE_BUTTONS.LEFT:
+				if(userState == USER_STATES.DEFAULT) {
+					//userState = USER_STATES.DRAG;
+				}
 				break;
 			case MOUSE_BUTTONS.MIDDLE:
 				break;
 			case MOUSE_BUTTONS.RIGHT:
 				// select points
+				if(userState == USER_STATES.DEFAULT) {
+					let pointTest = shape.selectPoint(e.clientX, e.clientY);
+					if(pointTest) {
+						if(!userSelection.includes(pointTest)) {
+							userSelection.push(pointTest);
+						} else {
+							pointTest.deselect();
+							userSelection.splice(userSelection.indexOf(pointTest), 1);
+						}
+					} else {
+						userState = USER_STATES.MULTISELECT;
+						selectBox = new BoundingBox({x: e.clientX, y: e.clientY}, {x: e.clientX, y: e.clientY});
+						toDraw.push(selectBox);
+					}
+				}
 
-				if(userState == USER_STATES.DEFAULT && !userObj) {
+
+				/*
+				if(userState == USER_STATES.DEFAULT && userSelection == []) {
 					userObj = shape.selectPoint(e.clientX, e.clientY);	// return a point or null.
 					if(!userObj) {										// if nothing returns, you're in a void. click+drag selection applies.
 						userState = USER_STATES.MULTISELECT;
@@ -98,16 +133,16 @@ $(function() {
 						userState = USER_STATES.SELECT;
 					}
 
-				} else if (userState == USER_STATES.MULTIDRAG) {
+				
 				
 				// uhhhhhhhh...
 				
 				} else {
 					//userObj.deselect();									// watch out for this nonsense later
 					userObj = null;
-				}
+				}*/
 
-				console.log("OBJ: ", userObj, "STATE: ", userState);
+				console.log("STATE: ", userState);
 				break;
 			default:
 				break;
@@ -117,6 +152,11 @@ $(function() {
 			e.preventDefault();
 
 
+			if(userState == USER_STATES.MULTISELECT) {
+				selectBox.move(e.clientX, e.clientY);
+			}
+
+			/*
 			if(userState == USER_STATES.SELECT) {
 				if(!userObj) {
 					return;
@@ -132,7 +172,7 @@ $(function() {
 					point.move(e.clientX, e.clientY);
 				}
 			}
-
+			*/
 			
 			//shape.dragPoint(e.clientX, e.clientY);
 		});
@@ -140,6 +180,28 @@ $(function() {
 		canvas.addEventListener('mouseup', function(e) {		// deselect point
 			e.preventDefault();
 
+			if (userState == USER_STATES.MULTISELECT) {
+
+				for (const point of shape.points) {
+					if(selectBox.contains(point)) {
+						point.select();
+						userSelection.push(point);
+					}
+				}
+
+				if(userSelection == []) {
+					
+					userState = USER_STATES.DEFAULT;
+				} else {
+					//userState = USER_STATES.MULTIDRAG;
+				}
+
+				toDraw.splice(toDraw.indexOf(selectBox), 1);
+				selectBox = null;
+				userState = USER_STATES.DEFAULT;
+			}
+
+			/*
 			if(userState == USER_STATES.SELECT) {
 				if(!userObj) {
 					return;
@@ -167,7 +229,7 @@ $(function() {
 					userObj = selection;
 					userState = USER_STATES.MULTIDRAG;
 				}
-			}
+			} */
 
 			//shape.stopDraggingPoint(e.clientX, e.clientY);
 		});
