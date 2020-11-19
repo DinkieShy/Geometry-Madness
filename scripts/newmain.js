@@ -1,9 +1,7 @@
-// i'm gonna mess everything up
+// do not question the section titles
 
 let ctx = "";
 let shape = new Shape();
-
-TASKBAR_UP = true; //starts up
 
 const MOUSE_BUTTONS = {
 	LEFT: 0,
@@ -12,20 +10,10 @@ const MOUSE_BUTTONS = {
 	UNKNOWN: 3
 }
 
-function toggleTaskbar(){
-	if(TASKBAR_UP){
-		$('#cmdbar').animate({
-			"bottom": "-75px"
-		}, 750);
-		$('#cmdbar-hider')[0].innerHTML = "/\\";
-	}
-	else{
-		$('#cmdbar').animate({
-			"bottom": "0px"
-		}, 750);
-		$('#cmdbar-hider')[0].innerHTML = "\\/";
-	}
-	TASKBAR_UP = !TASKBAR_UP;
+const USER_STATES = {	// what the fuck is the user doing
+	DEFAULT: 0,
+	SELECT: 1,
+	MULTISELECT: 2
 }
 
 function getMouseButton(e) {
@@ -34,36 +22,134 @@ function getMouseButton(e) {
 	}
 }
 
-function draw(){
-    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-	shape.draw(ctx);
-	//console.log(shape.selectedPoint.dragging);
+function draw(ctx, toDraw){
+	ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+	
+	for(let ob of toDraw) {
+		ob.draw(ctx);
+	}
+	//shape.draw(ctx);
+	// console.log(shape.selectedPoint.dragging);
 }
 
-$(function(){
+$(function() {
+	/*======================================
+	<(￣︶￣)> | INITIALIZATION! | <(￣︶￣)>
+	======================================*/
 	console.log("init");
 
-	canvas = $('#canvas')[0];
+	let canvas = $('#canvas')[0];
 
 	canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.height = window.innerHeight;						// initial width/height
 	
-	/*
-	ctx = canvas.getContext('2d');
-	setInterval(draw, 16);
+	let ctx = canvas.getContext('2d');
+
+	let toDraw = [shape];
+
+	setInterval(function() {								// canvas render rate
+		draw(ctx, toDraw);
+	}, 16);
 	
-	window.addEventListener('resize', function() {
+	window.addEventListener('resize', function() {			// dynamically resize canvas
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-    }, false);
-    
-    canvas.addEventListener('dblclick', function(e){        // add new point on double click
+	}, false);
+
+	let userState = USER_STATES.DEFAULT;
+	let userObj = null;
+	
+	/*======================================
+	===( ╹▽╹ ) | INTERACTION! | ( ╹▽╹ )====
+	======================================*/
+
+	canvas.addEventListener('dblclick', function(e){        // add new point on double click
 		e.preventDefault();
 
-		if(!shape.selectPoint(e.clientX, e.clientY)) {
+		if(userState == USER_STATES.DEFAULT && !userObj) {
 			shape.addPoint(e.clientX, e.clientY);
 		}
-    });
+	});
+
+	canvas.addEventListener('contextmenu', function(e) {	// remove context menu
+		e.preventDefault();
+	});
+	
+	canvas.addEventListener('mousedown', function(e) {		// single click
+		e.preventDefault();
+		let mBtn = getMouseButton(e);
+
+		switch(mBtn) {
+			case MOUSE_BUTTONS.LEFT:
+				break;
+			case MOUSE_BUTTONS.MIDDLE:
+				break;
+			case MOUSE_BUTTONS.RIGHT:
+				// select points
+
+				if(userState == USER_STATES.DEFAULT && !userObj) {
+					userObj = shape.selectPoint(e.clientX, e.clientY);	// return a point or null.
+					if(!userObj) {										// if nothing returns, you're in a void. click+drag selection applies.
+						userState = USER_STATES.MULTISELECT;
+						userObj = new BoundingBox({x: e.clientX, y: e.clientY}, {x: e.clientX, y: e.clientY});
+						toDraw.push(userObj);
+					} else {
+						userState = USER_STATES.SELECT;
+					}
+
+				} else {
+					//userObj.deselect();									// watch out for this nonsense later
+					userObj = null;
+				}
+
+				console.log("OBJ: ", userObj, "STATE: ", userState);
+				break;
+			default:
+				break;
+		}
+
+		canvas.addEventListener('mousemove', function(e) {		// drag
+			e.preventDefault();
+
+
+			if(userState == USER_STATES.SELECT) {
+				if(!userObj) {
+					return;
+				}
+
+				userObj.move(e.clientX, e.clientY);						// more nonsense
+
+			} else if (userState == USER_STATES.MULTISELECT) {
+				userObj.move(e.clientX, e.clientY);						// oo this is a bad idea
+			}
+
+			
+			//shape.dragPoint(e.clientX, e.clientY);
+		});
+	
+		canvas.addEventListener('mouseup', function(e) {		// deselect point
+			e.preventDefault();
+
+			if(userState == USER_STATES.SELECT) {
+				if(!userObj) {
+					return;
+				}
+
+				userState = USER_STATES.DEFAULT;
+				userObj.deselect();
+				userObj = null;
+
+			} else if (userState == USER_STATES.MULTISELECT) {
+				userState = USER_STATES.DEFAULT;
+			}
+
+			//shape.stopDraggingPoint(e.clientX, e.clientY);
+		});
+	});
+
+
+	/*
+    
 
     canvas.addEventListener('mousedown', function(e) {		// select point on single click
 		e.preventDefault();
@@ -80,9 +166,7 @@ $(function(){
 		shape.stopDraggingPoint(e.clientX, e.clientY);
 	});
 
-	canvas.addEventListener('contextmenu', function(e) {	// something..
-		e.preventDefault();
-	});
+	
 	*/
 
 	let bb = new BoundingBox({x: 0, y: 0}, {x: 1, y: 1});

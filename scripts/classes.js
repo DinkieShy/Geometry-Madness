@@ -8,7 +8,7 @@ const DEADZONE = 10;
 
 class Point {
 
-	static count = 0;
+	static count = 0;	// tracks total points created
 
     constructor(x, y, neighbours = []) {
         this.x = x;
@@ -44,6 +44,34 @@ class Point {
 		}
 		else{
 			return false;
+		}
+	}
+
+	select() {
+		this.fill = FILLS.SELECTED_FILL;
+		this.dragging = true;
+	}
+
+	deselect() {
+		this.fill = FILLS.DEFAULT_FILL;
+		this.dragging = false;
+		this.moved = false;
+	}
+
+	move(x, y) {
+		if(this.dragging) {
+			if(!this.moved) {
+				let xDif = this.x - x;
+				let yDif = this.y - y;
+
+				if(xDif*xDif + yDif*yDif >= DEADZONE * DEADZONE){
+					this.moved = true;
+				} 
+				
+			} else {
+				this.x = x;
+				this.y = y;
+			}
 		}
 	}
 
@@ -89,16 +117,45 @@ class WingedEdge {
 class BoundingBox {
 	constructor(startPt, endPt) {
 
-		if(startPt.x == endPt.x || startPt.y == endPt.y) {
-			return;	// just a line, no area to bound anything
-		}
+		//if(startPt.x == endPt.x || startPt.y == endPt.y) {
+		//	return;	// just a line, no area to bound anything
+		//}
 
-		this.minPt = {x: Math.min(startPt.x, endPt.x), y: Math.min(startPt.y, endPt.y)};
-		this.maxPt = {x: Math.max(startPt.x, endPt.x), y: Math.max(startPt.y, endPt.y)};		
+		this.startPt = startPt;
+		this.endPt = endPt;
+
+		this.minPt;
+		this.maxPt;
+	}
+
+	move(x, y) {
+		this.endPt = {x: x, y: y};
+	}
+
+	makeRect() {
+		this.calculateBox();
+
+		let width = this.maxPt.x - this.minPt.x;
+		let height = this.maxPt.y - this.minPt.y;
+
+		return [this.minPt.x, this.minPt.y, width, height];
+	}
+
+	calculateBox() {
+		this.minPt = {x: Math.min(this.startPt.x, this.endPt.x), y: Math.min(this.startPt.y, this.endPt.y)};
+		this.maxPt = {x: Math.max(this.startPt.x, this.endPt.x), y: Math.max(this.startPt.y, this.endPt.y)};
 	}
 
 	withinBound(point) {
-		
+		return (point.x >= this.minPt.x && point.x <= this.maxPt.x &&
+			point.y >= this.minPt.y && point.y <= this.maxPt.y);
+	}
+
+	draw(ctx) {
+		ctx.globalAlpha = 0.2;
+		ctx.fillStyle = "#0000C0"
+		ctx.fillRect(...this.makeRect());
+		ctx.globalAlpha = 1.0;
 	}
 }
 
@@ -141,7 +198,23 @@ class Shape {
 		return this.edges[this.edges.length - 1];
 	}
 
+
+
 	selectPoint(x, y) {
+		for(const point of this.points) {	// go through all points
+			if(point.contains(x, y)) {		// if mouse is within point
+				point.select();
+				return point;
+			}
+		}
+
+		return null;
+	}
+
+	
+	/* REDOING THESE.. AGAIN */
+
+	selectPointOld(x, y) {
 		for(const point of this.points) {	// go through all points
 			if(point.contains(x, y)) {		// if mouse is within point
 				if(!this.selectedPoint) {		// select that point
