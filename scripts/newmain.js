@@ -102,6 +102,9 @@ $(function() {
 				}
 				break;
 			case MOUSE_BUTTONS.MIDDLE:
+				if(userSelection != []) {
+					userState = USER_STATES.DRAG;
+				}
 				break;
 			case MOUSE_BUTTONS.RIGHT:
 				// select points
@@ -120,6 +123,8 @@ $(function() {
 						toDraw.push(selectBox);
 					}
 				}
+
+				
 
 
 				/*
@@ -154,6 +159,13 @@ $(function() {
 
 			if(userState == USER_STATES.MULTISELECT) {
 				selectBox.move(e.clientX, e.clientY);
+
+			} else if (userState == USER_STATES.DRAG) {
+				// move all selected points relative to their current positions
+
+				for(const point of userSelection) {
+					point.move(e.clientX, e.clientY)
+				}
 			}
 
 			/*
@@ -191,15 +203,16 @@ $(function() {
 
 				if(userSelection == []) {
 					
-					userState = USER_STATES.DEFAULT;
+					//userState = USER_STATES.DEFAULT;
 				} else {
 					//userState = USER_STATES.MULTIDRAG;
 				}
 
 				toDraw.splice(toDraw.indexOf(selectBox), 1);
 				selectBox = null;
-				userState = USER_STATES.DEFAULT;
 			}
+
+			userState = USER_STATES.DEFAULT;
 
 			/*
 			if(userState == USER_STATES.SELECT) {

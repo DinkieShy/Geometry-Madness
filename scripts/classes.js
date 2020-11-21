@@ -71,6 +71,7 @@ class Point {
 			} else {
 				this.x = x;
 				this.y = y;
+				console.log("x ", this.x, ", y ", this.y);
 			}
 		}
 	}
