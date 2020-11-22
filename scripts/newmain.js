@@ -15,7 +15,8 @@ const USER_STATES = {	// what the fuck is the user doing
 	DEFAULT: 0,
 	SELECT: 1,
 	MULTISELECT: 2,
-	DRAG: 3
+	DRAG: 3,
+	EDGE: 4
 }
 
 function getMouseButton(e) {
@@ -62,7 +63,7 @@ $(function() {
 
 	let selectBox = null;
 	let userSelection = [];
-	let oldMouse = null;
+	let oldMouse = null;									// store mouse coordinates for multi drag
 	
 	/*======================================
 	===( ╹▽╹ ) | INTERACTION! | ( ╹▽╹ )====
@@ -125,29 +126,6 @@ $(function() {
 					}
 				}
 
-				
-
-
-				/*
-				if(userState == USER_STATES.DEFAULT && userSelection == []) {
-					userObj = shape.selectPoint(e.clientX, e.clientY);	// return a point or null.
-					if(!userObj) {										// if nothing returns, you're in a void. click+drag selection applies.
-						userState = USER_STATES.MULTISELECT;
-						userObj = new BoundingBox({x: e.clientX, y: e.clientY}, {x: e.clientX, y: e.clientY});
-						toDraw.push(userObj);
-					} else {
-						userState = USER_STATES.SELECT;
-					}
-
-				
-				
-				// uhhhhhhhh...
-				
-				} else {
-					//userObj.deselect();									// watch out for this nonsense later
-					userObj = null;
-				}*/
-
 				console.log("STATE: ", userState);
 				break;
 			default:
@@ -173,26 +151,6 @@ $(function() {
 
 				oldMouse = {x: e.clientX, y: e.clientY};
 			}
-
-			/*
-			if(userState == USER_STATES.SELECT) {
-				if(!userObj) {
-					return;
-				}
-
-				userObj.move(e.clientX, e.clientY);						// more nonsense
-
-			} else if (userState == USER_STATES.MULTISELECT) {
-				userObj.move(e.clientX, e.clientY);						// oo this is a bad idea
-
-			} else if (userState == USER_STATES.MULTIDRAG) {
-				for(const point of userObj) {
-					point.move(e.clientX, e.clientY);
-				}
-			}
-			*/
-			
-			//shape.dragPoint(e.clientX, e.clientY);
 		});
 	
 		canvas.addEventListener('mouseup', function(e) {		// deselect point
@@ -201,7 +159,7 @@ $(function() {
 			if (userState == USER_STATES.MULTISELECT) {
 
 				for (const point of shape.points) {
-					if(selectBox.contains(point)) {
+					if(selectBox.contains(point) && !userSelection.includes(point)) {
 						point.select();
 						userSelection.push(point);
 					}
@@ -224,62 +182,8 @@ $(function() {
 			}
 
 			userState = USER_STATES.DEFAULT;
-
-			/*
-			if(userState == USER_STATES.SELECT) {
-				if(!userObj) {
-					return;
-				}
-
-				userState = USER_STATES.DEFAULT;
-				userObj.deselect();
-				userObj = null;
-
-			} else if (userState == USER_STATES.MULTISELECT) {
-
-				let selection = [];
-				for(let point of shape.points) {
-					if(userObj.contains(point)) {
-						point.select();
-						selection.push(point);
-					}
-				}
-
-				if(selection == []) {
-					toDraw.splice(toDraw.indexOf(userObj), 1);
-					userObj = null;
-					userState = USER_STATES.DEFAULT;
-				} else {
-					userObj = selection;
-					userState = USER_STATES.MULTIDRAG;
-				}
-			} */
-
-			//shape.stopDraggingPoint(e.clientX, e.clientY);
 		});
 	});
-
-
-	/*
-    
-
-    canvas.addEventListener('mousedown', function(e) {		// select point on single click
-		e.preventDefault();
-		shape.selectPoint(e.clientX, e.clientY);
-	});
-	
-	canvas.addEventListener('mousemove', function(e) {		// drag point
-		e.preventDefault();
-		shape.dragPoint(e.clientX, e.clientY);
-	});
-
-	canvas.addEventListener('mouseup', function(e) {		// deselect point
-		e.preventDefault();
-		shape.stopDraggingPoint(e.clientX, e.clientY);
-	});
-
-	
-	*/
 });
 
 
