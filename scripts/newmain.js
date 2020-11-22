@@ -62,6 +62,7 @@ $(function() {
 
 	let selectBox = null;
 	let userSelection = [];
+	let oldMouse = null;
 	
 	/*======================================
 	===( ╹▽╹ ) | INTERACTION! | ( ╹▽╹ )====
@@ -162,10 +163,15 @@ $(function() {
 
 			} else if (userState == USER_STATES.DRAG) {
 				// move all selected points relative to their current positions
+				if(!oldMouse) {
+					oldMouse = {x: e.clientX, y: e.clientY};
+				}
 
 				for(const point of userSelection) {
-					point.move(e.clientX, e.clientY)
+					point.move(e.clientX, e.clientY, oldMouse.x, oldMouse.y);
 				}
+
+				oldMouse = {x: e.clientX, y: e.clientY};
 			}
 
 			/*
@@ -201,6 +207,8 @@ $(function() {
 					}
 				}
 
+				console.log("Selected ", userSelection.length, " points: ", userSelection);
+
 				if(userSelection == []) {
 					
 					//userState = USER_STATES.DEFAULT;
@@ -210,6 +218,9 @@ $(function() {
 
 				toDraw.splice(toDraw.indexOf(selectBox), 1);
 				selectBox = null;
+			
+			} else if (userState == USER_STATES.DRAG) {
+				oldMouse = null;
 			}
 
 			userState = USER_STATES.DEFAULT;

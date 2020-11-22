@@ -15,7 +15,10 @@ class Point {
         this.y = y;
 
         this.moved = false;
-        this.dragging = false;
+		this.dragging = false;
+		
+		this.lastX = null;
+		this.lastY = null;
 
 		this.neighbours = neighbours;
 		this.fill = FILLS.DEFAULT_FILL;
@@ -58,7 +61,7 @@ class Point {
 		this.moved = false;
 	}
 
-	move(x, y) {
+	move(x, y, px, py) {
 		if(this.dragging) {
 			if(!this.moved) {
 				let xDif = this.x - x;
@@ -69,9 +72,19 @@ class Point {
 				} 
 				
 			} else {
-				this.x = x;
-				this.y = y;
-				console.log("x ", this.x, ", y ", this.y);
+				this.x += (x - px);
+				this.y += (y - py);
+				
+				/*console.log(
+					"- - - - - - - -\n",
+					"clientXY: ", x, ", ", y, "\n",
+					"thisXY: ", this.x, ", ", this.y, "\n",
+					"XYdif: ", this.x - x, ", ", this.y - y, "\n"
+					
+				);*/
+
+				this.lastX = x;
+				this.lastY = y;
 			}
 		}
 	}
