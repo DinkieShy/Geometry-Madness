@@ -16,9 +16,6 @@ class Point {
 
         this.moved = false;
 		this.dragging = false;
-		
-		this.lastX = null;
-		this.lastY = null;
 
 		this.neighbours = neighbours;
 		this.fill = FILLS.DEFAULT_FILL;
@@ -170,9 +167,6 @@ class Shape {
 	constructor() {
 		this.points = [];
 		this.edges = [];
-
-
-		this.selection = [];
 		// this is doing too much methinks.
 	}
 
@@ -203,7 +197,7 @@ class Shape {
 	selectPoint(x, y) {
 		for(const point of this.points) {	// go through all points
 			if(point.contains(x, y)) {		// if mouse is within point
-				point.select();
+				//point.select();
 				return point;
 			}
 		}

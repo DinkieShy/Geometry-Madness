@@ -96,24 +96,36 @@ $(function() {
 	canvas.addEventListener('mousedown', function(e) {		// single click
 		e.preventDefault();
 		let mBtn = getMouseButton(e);
+		let pointTest = shape.selectPoint(e.clientX, e.clientY);
 
 		switch(mBtn) {
 			case MOUSE_BUTTONS.LEFT:
-				if(userState == USER_STATES.DEFAULT) {
-					//userState = USER_STATES.DRAG;
+				if(userSelection != [] && !pointTest) {
+					userState = USER_STATES.DRAG;
+				}
+
+				if(pointTest) {
+					// make a new edge!
+					userState = USER_STATES.EDGE;
+					//pointTest.fill = "#00C000";
+					
+					shape.addEdge(pointTest, {x: e.clientX, y: e.clientY});
 				}
 				break;
 			case MOUSE_BUTTONS.MIDDLE:
+				/*
 				if(userSelection != []) {
 					userState = USER_STATES.DRAG;
 				}
+				*/
 				break;
 			case MOUSE_BUTTONS.RIGHT:
 				// select points
 				if(userState == USER_STATES.DEFAULT) {
-					let pointTest = shape.selectPoint(e.clientX, e.clientY);
+					//let pointTest = shape.selectPoint(e.clientX, e.clientY);
 					if(pointTest) {
 						if(!userSelection.includes(pointTest)) {
+							pointTest.select();
 							userSelection.push(pointTest);
 						} else {
 							pointTest.deselect();
@@ -150,6 +162,9 @@ $(function() {
 				}
 
 				oldMouse = {x: e.clientX, y: e.clientY};
+
+			} else if (userState == USER_STATES.EDGE) {
+				shape.edges[shape.edges.length - 1].p2 = {x: e.clientX, y: e.clientY};
 			}
 		});
 	
@@ -158,27 +173,47 @@ $(function() {
 
 			if (userState == USER_STATES.MULTISELECT) {
 
+				let added = 0;
+
 				for (const point of shape.points) {
 					if(selectBox.contains(point) && !userSelection.includes(point)) {
 						point.select();
 						userSelection.push(point);
+						added++;
 					}
 				}
 
 				console.log("Selected ", userSelection.length, " points: ", userSelection);
 
-				if(userSelection == []) {
-					
-					//userState = USER_STATES.DEFAULT;
-				} else {
-					//userState = USER_STATES.MULTIDRAG;
-				}
-
 				toDraw.splice(toDraw.indexOf(selectBox), 1);
 				selectBox = null;
+
+				if(added == 0) {
+					for (const point of userSelection) {
+						point.deselect();
+					}
+					
+					userSelection = [];
+				}
 			
 			} else if (userState == USER_STATES.DRAG) {
 				oldMouse = null;
+
+				/*
+				for (const point of userSelection) {
+					point.deselect();
+				}
+				
+				userSelection = [];
+				*/
+
+			} else if (userState == USER_STATES.EDGE) {
+				let pointTest = shape.selectPoint(e.clientX, e.clientY);
+				if(pointTest) {
+					shape.edges[shape.edges.length - 1].p2 = pointTest;
+				} else {
+					shape.edges.pop();
+				}
 			}
 
 			userState = USER_STATES.DEFAULT;
