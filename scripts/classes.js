@@ -71,17 +71,6 @@ class Point {
 			} else {
 				this.x += (x - px);
 				this.y += (y - py);
-				
-				/*console.log(
-					"- - - - - - - -\n",
-					"clientXY: ", x, ", ", y, "\n",
-					"thisXY: ", this.x, ", ", this.y, "\n",
-					"XYdif: ", this.x - x, ", ", this.y - y, "\n"
-					
-				);*/
-
-				this.lastX = x;
-				this.lastY = y;
 			}
 		}
 	}

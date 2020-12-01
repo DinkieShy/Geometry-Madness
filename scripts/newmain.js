@@ -210,13 +210,12 @@ $(function() {
 			} else if (userState == USER_STATES.EDGE) {
 				let pointTest = shape.selectPoint(e.clientX, e.clientY);
 				let edge = shape.edges.pop();
-				console.log("EDGE: ", edge);
+
 				if(pointTest) {
 					edge.p2 = pointTest;
 					if(!shape.edgeInEdges(edge)) {
 						shape.edges.push(edge);
 					}
-					//shape.edges[shape.edges.length - 1].p2 = pointTest;
 				}
 			}
 
