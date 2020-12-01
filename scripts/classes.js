@@ -10,17 +10,15 @@ class Point {
 
 	static count = 0;	// tracks total points created
 
-    constructor(x, y, neighbours = []) {
+    constructor(x, y) {
         this.x = x;
         this.y = y;
 
         this.moved = false;
 		this.dragging = false;
 
-		this.neighbours = neighbours;
 		this.fill = FILLS.DEFAULT_FILL;
 		this.index = Point.count++;
-
     }
 
     draw(ctx) {		// render to canvas
@@ -80,18 +78,21 @@ class Point {
 	}
 }
 
-class NormalisedPoint extends Point {
-
+class NormalisedPoint {
+	constructor(point, width, height) {
+		this.x = point.x / width;
+		this.y = point.y / height;
+	}
 }
 
 class Witness extends Point {
-	constructor(x, y, neighbours = []) {
-		super(x, y, neighbours);
+	constructor(x, y) {
+		super(x, y);
 	}
 
 	draw() {
 		// need to draw witness point visibility
-
+		// todo
 	}
 }
 
@@ -186,7 +187,6 @@ class Shape {
 	selectPoint(x, y) {
 		for(const point of this.points) {	// go through all points
 			if(point.contains(x, y)) {		// if mouse is within point
-				//point.select();
 				return point;
 			}
 		}
@@ -204,116 +204,13 @@ class Shape {
 
 		return false;
 	}
-	
-	/* REDOING THESE.. AGAIN */
-
-	selectPointOld(x, y) {
-		for(const point of this.points) {	// go through all points
-			if(point.contains(x, y)) {		// if mouse is within point
-				if(!this.selectedPoint) {		// select that point
-					this.selectedPoint = point;
-					point.fill = FILLS.SELECTED_FILL;
-					point.dragging = true;
-
-				} else if (point == this.selectedPoint) {	// or deselect same point
-					this.selectedPoint = null;
-					point.fill = FILLS.DEFAULT_FILL;
-					point.dragging = false;
-
-				} else if (this.drawingNewEdge) {		// add an edge
-					if(!point.neighbours.includes(this.drawingNewEdge.p1)) {
-						this.drawingNewEdge.p2 = point;
-
-						this.drawingNewEdge.p1.neighbours.push(point);
-						point.neighbours.push(this.drawingNewEdge.p1);	// neighbor each other
-
-						this.drawingNewEdge = null;	// drawing edge becomes actual edge
-					} 
-				}
-				return true;
-			}
-		}
-		
-		if(this.selectedPoint) {		// deselect a point
-			this.selectedPoint.fill = FILLS.DEFAULT_FILL;
-			this.selectedPoint.dragging = false;
-			this.selectedPoint = null;
-		}
-
-		if(this.drawingNewEdge) {		// remove the mouse - point edge
-			this.edges.splice(this.edges.indexOf(this.drawingNewEdge), 1);
-			this.drawingNewEdge = null;
-		}
-
-
-		
-		return false;
-	}
-
-	dragPoint(x, y) {
-		if(this.selectedPoint && this.selectedPoint.dragging) {
-			if(!this.selectedPoint.moved) {
-				let xDif = this.selectedPoint.x - x;
-				let yDif = this.selectedPoint.y - y;
-
-				if(xDif*xDif + yDif*yDif >= DEADZONE * DEADZONE){
-					this.selectedPoint.moved = true;
-				} 
-			}
-
-			if(this.selectedPoint.moved) {
-				this.selectedPoint.x = x;
-				this.selectedPoint.y = y;
-			}
-		}
-
-		if(this.drawingNewEdge) {
-			this.drawingNewEdge.p2 = {x: x, y: y};
-		}
-	}
-
-	stopDraggingPoint(x, y) {
-		if(this.selectedPoint) {
-			this.selectedPoint.dragging = false;
-			if(this.selectedPoint.moved) {
-				this.selectedPoint.fill = FILLS.DEFAULT_FILL;
-				this.selectedPoint.moved = false;
-				this.selectedPoint = null;
-			} else {
-				if(!this.drawingNewEdge) {
-					this.drawingNewEdge = this.addEdge(this.selectedPoint, {x: x, y: y});
-				}
-			}
-		}
-	}
-
-	sortPoints() {
-
-	}
-
-	sortEdges() {
-
-	}
 }
 
 
 /*
-
 function NormalisedPoint(point){
 	this.x = point.x/WIDTH;
 	this.y = point.y/HEIGHT;
 	this.neighbours = point.neighbours;
-}
-
-
-Point.prototype.drawEdges = function(ctx){
-	ctx.strokeStyle = '#FFFFFF';
-	for(var i = 0; i < this.neighbours.length; i++){
-		neighbour = points[this.neighbours[i]]
-		ctx.beginPath()
-		ctx.moveTo(this.x, this.y)
-		ctx.lineTo(neighbour.x, neighbour.y);
-		ctx.stroke()
-	}
 }
 */

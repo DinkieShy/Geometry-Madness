@@ -31,8 +31,6 @@ function draw(ctx, toDraw){
 	for(let ob of toDraw) {
 		ob.draw(ctx);
 	}
-	//shape.draw(ctx);
-	// console.log(shape.selectedPoint.dragging);
 }
 
 $(function() {
@@ -113,16 +111,12 @@ $(function() {
 				}
 				break;
 			case MOUSE_BUTTONS.MIDDLE:
-				/*
-				if(userSelection != []) {
-					userState = USER_STATES.DRAG;
-				}
-				*/
+
 				break;
 			case MOUSE_BUTTONS.RIGHT:
 				// select points
 				if(userState == USER_STATES.DEFAULT) {
-					//let pointTest = shape.selectPoint(e.clientX, e.clientY);
+
 					if(pointTest) {
 						if(!userSelection.includes(pointTest)) {
 							pointTest.select();
@@ -199,14 +193,6 @@ $(function() {
 			} else if (userState == USER_STATES.DRAG) {
 				oldMouse = null;
 
-				/*
-				for (const point of userSelection) {
-					point.deselect();
-				}
-				
-				userSelection = [];
-				*/
-
 			} else if (userState == USER_STATES.EDGE) {
 				let pointTest = shape.selectPoint(e.clientX, e.clientY);
 				let edge = shape.edges.pop();
@@ -237,21 +223,7 @@ $(function() {
     */
 
 
-/*
 
-function addNeighbour(point2){
-	if(!points[selectedPoint].neighbours.includes(point2) && !points[point2].neighbours.includes(selectedPoint) && selectedPoint != point2){
-		points[selectedPoint].neighbours.push(point2);
-	}
-	else if(selectedPoint != point2 && points[selectedPoint].neighbours.includes(point2)){
-		points[selectedPoint].neighbours.splice(points[selectedPoint].neighbours.indexOf(point2), 1);
-	}
-	else if(selectedPoint != point2 && points[point2].neighbours.includes(selectedPoint)){
-		points[point2].neighbours.splice(points[point2].neighbours.indexOf(selectedPoint), 1);
-	}
-	points[selectedPoint].fill = DEFAULT_FILL;
-	selectedPoint = -1;
-}*/
 /* worry bout this later
 function createShapeFile(){
 	normalisedPoints = []
