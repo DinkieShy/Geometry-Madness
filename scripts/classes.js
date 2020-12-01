@@ -205,6 +205,16 @@ class Shape {
 		return null;
 	}
 
+	edgeInEdges(edge) {
+		for(const edgy of this.edges) {
+			if((Point.equals(edgy.p1, edge.p1) && Point.equals(edgy.p2, edge.p2)) 
+				|| (Point.equals(edgy.p1, edge.p2) && Point.equals(edgy.p2, edge.p1))) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 	
 	/* REDOING THESE.. AGAIN */
 
