@@ -69,10 +69,25 @@ function expandShapeFile(uploadShape){
 	}
 
 	for(const edge of uploadShape.edges) {
+
 		let p1 = edge.p1;
 		let p2 = edge.p2;
 
-		shape.addEdge({x: p1.x * uploadShape.width, y: p1.y * uploadShape.height}, {x: p2.x * uploadShape.width, y: p2.y * uploadShape.height});
+		p1.x *= uploadShape.width;
+		p1.y *= uploadShape.height;
+
+		p2.x *= uploadShape.width;
+		p2.y *= uploadShape.height;
+
+		for(const point of shape.points) {	// not a good way to do this but you only do it once per upload soooo....
+			if(Point.equals(point, edge.p1)) {
+				edge.p1 = point;
+			} else if(Point.equals(point, edge.p2)) {
+				edge.p2 = point;
+			}
+		}
+
+		shape.addEdge(edge.p1, edge.p2);
 	}
 }
 
@@ -96,7 +111,6 @@ function chooseFile(event) {
     fr.onload = fileLoaded;
     fr.readAsText(file);
 }
-
 
 function getMouseButton(e) {
 	if(typeof e === 'object') {
