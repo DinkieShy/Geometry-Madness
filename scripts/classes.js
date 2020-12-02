@@ -19,6 +19,8 @@ class Point {
 
 		this.fill = FILLS.DEFAULT_FILL;
 		this.index = Point.count++;
+
+		this.neighbors = [];
     }
 
     draw(ctx) {		// render to canvas
@@ -82,6 +84,19 @@ class NormalisedPoint {
 	constructor(point, width, height) {
 		this.x = point.x / width;
 		this.y = point.y / height;
+	}
+}
+
+class NormalisedEdge {
+	constructor(edge, width, height) {
+		this.p1 = {
+			x: edge.p1.x / width,
+			y: edge.p1.y / height
+		}
+		this.p2 = {
+			x: edge.p2.x / width,
+			y: edge.p2.y / height
+		}
 	}
 }
 

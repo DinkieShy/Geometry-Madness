@@ -4,6 +4,8 @@
 let ctx = "";
 let shape = new Shape();
 let TASKBAR_UP = true; //starts up
+let WIDTH = 0;
+let HEIGHT = 0;
 
 const MOUSE_BUTTONS = {
 	LEFT: 0,
@@ -36,6 +38,66 @@ function toggleTaskbar(){
 	TASKBAR_UP = !TASKBAR_UP;
 }
 
+function createShapeFile(){
+	let normalisedPoints = [];
+	for(const pt of shape.points) {
+		normalisedPoints.push(new NormalisedPoint(pt, WIDTH, HEIGHT));
+	}
+
+	let edges = [];
+	for(const ed of shape.edges) {
+		edges.push(new NormalisedEdge(ed, WIDTH, HEIGHT));
+	}
+
+	dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({width: WIDTH, height: HEIGHT, points: normalisedPoints, edges: edges}));
+	downloadElem = $('#downloadanchor')[0];
+	downloadElem.href = dataStr;
+	downloadElem.download = "shape.json";
+	downloadElem.click();
+}
+
+function expandShapeFile(uploadShape){
+	console.log(uploadShape);
+	if(shape.points.length > 0) {
+		Point.count = 0;
+		shape.points = [];
+		shape.edges = [];
+	}
+
+	for(const point of uploadShape.points) {
+		shape.addPoint(point.x * uploadShape.width, point.y * uploadShape.height)
+	}
+
+	for(const edge of uploadShape.edges) {
+		let p1 = edge.p1;
+		let p2 = edge.p2;
+
+		shape.addEdge({x: p1.x * uploadShape.width, y: p1.y * uploadShape.height}, {x: p2.x * uploadShape.width, y: p2.y * uploadShape.height});
+	}
+}
+
+function fileLoaded(event){
+	console.log(event.target.result);
+	expandShapeFile(JSON.parse(event.target.result));
+}
+
+function chooseFile(event) {
+    if (typeof window.FileReader !== 'function')
+        throw ("The file API isn't supported on this browser.");
+    let input = event.target;
+    if (!input)
+        throw ("The browser does not properly implement the event object");
+    if (!input.files)
+        throw ("This browser does not support the `files` property of the file input.");
+    if (!input.files[0])
+        return undefined;
+    let file = input.files[0];
+    let fr = new FileReader();
+    fr.onload = fileLoaded;
+    fr.readAsText(file);
+}
+
+
 function getMouseButton(e) {
 	if(typeof e === 'object') {
 		return e.button;
@@ -59,7 +121,9 @@ $(function() {
 	let canvas = $('#canvas')[0];
 
 	canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;						// initial width/height
+	canvas.height = window.innerHeight;						// initial width/height
+	WIDTH = canvas.width;
+	HEIGHT = canvas.height;
 	
 	let ctx = canvas.getContext('2d');
 
@@ -71,7 +135,9 @@ $(function() {
 	
 	window.addEventListener('resize', function() {			// dynamically resize canvas
         canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+		canvas.height = window.innerHeight;
+		WIDTH = canvas.width;
+		HEIGHT = canvas.height;
 	}, false);
 
 	let userState = USER_STATES.DEFAULT;
@@ -229,59 +295,11 @@ $(function() {
 	});
 
 	$('#cmdbar-hider')[0].onclick = toggleTaskbar;
-});
 
-
-
-    /*
 	$('#downloadButton')[0].onclick = createShapeFile;
-
-	$('#cmdbar-hider')[0].onclick = toggleTaskbar;
 
 	$('#uploadButton')[0].onclick = function(){
 		$('#fileInput').click();
     }
-    */
+});
 
-
-
-/* worry bout this later
-function createShapeFile(){
-	normalisedPoints = []
-	for(var i = 0; i < points.length; i++){
-		normalisedPoints.push(new NormalisedPoint(points[i]));
-	}
-	dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(normalisedPoints));
-	downloadElem = $('#downloadanchor')[0];
-	downloadElem.href = dataStr;
-	downloadElem.download = "shape.json";
-	downloadElem.click();
-}
-
-function expandShapeFile(normalisedPoints){
-	for(var i = 0; i < normalisedPoints.length; i++){
-		points.push(new Point(normalisedPoints[i].x*WIDTH, normalisedPoints[i].y*HEIGHT, normalisedPoints[i].neighbours));
-	}
-}
-
-function fileLoaded(event){
-	points = [];
-	expandShapeFile(JSON.parse(event.target.result));
-}
-
-function chooseFile(event) {
-    if (typeof window.FileReader !== 'function')
-        throw ("The file API isn't supported on this browser.");
-    let input = event.target;
-    if (!input)
-        throw ("The browser does not properly implement the event object");
-    if (!input.files)
-        throw ("This browser does not support the `files` property of the file input.");
-    if (!input.files[0])
-        return undefined;
-    let file = input.files[0];
-    let fr = new FileReader();
-    fr.onload = fileLoaded;
-    fr.readAsText(file);
-}
-*/
