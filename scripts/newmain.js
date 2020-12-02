@@ -201,6 +201,8 @@ $(function() {
 					edge.p2 = pointTest;
 					if(!shape.edgeInEdges(edge)) {
 						shape.edges.push(edge);
+					} else {
+						shape.edges.splice(shape.edges.indexOf(edge), 1);
 					}
 				}
 			}
