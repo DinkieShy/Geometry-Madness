@@ -3,6 +3,7 @@
 
 let ctx = "";
 let shape = new Shape();
+let TASKBAR_UP = true; //starts up
 
 const MOUSE_BUTTONS = {
 	LEFT: 0,
@@ -17,6 +18,22 @@ const USER_STATES = {	// what the fuck is the user doing
 	MULTISELECT: 2,
 	DRAG: 3,
 	EDGE: 4
+}
+
+function toggleTaskbar(){
+	if(TASKBAR_UP){
+		$('#cmdbar').animate({
+			"bottom": "-75px"
+		}, 750);
+		$('#cmdbar-hider')[0].innerHTML = "/\\";
+	}
+	else{
+		$('#cmdbar').animate({
+			"bottom": "0px"
+		}, 750);
+		$('#cmdbar-hider')[0].innerHTML = "\\/";
+	}
+	TASKBAR_UP = !TASKBAR_UP;
 }
 
 function getMouseButton(e) {
@@ -137,79 +154,81 @@ $(function() {
 			default:
 				break;
 		}
-
-		canvas.addEventListener('mousemove', function(e) {		// drag
-			e.preventDefault();
-
-
-			if(userState == USER_STATES.MULTISELECT) {
-				selectBox.move(e.clientX, e.clientY);
-
-			} else if (userState == USER_STATES.DRAG) {
-				// move all selected points relative to their current positions
-				if(!oldMouse) {
-					oldMouse = {x: e.clientX, y: e.clientY};
-				}
-
-				for(const point of userSelection) {
-					point.move(e.clientX, e.clientY, oldMouse.x, oldMouse.y);
-				}
-
-				oldMouse = {x: e.clientX, y: e.clientY};
-
-			} else if (userState == USER_STATES.EDGE) {
-				shape.edges[shape.edges.length - 1].p2 = {x: e.clientX, y: e.clientY};
-			}
-		});
-	
-		canvas.addEventListener('mouseup', function(e) {		// deselect point
-			e.preventDefault();
-
-			if (userState == USER_STATES.MULTISELECT) {
-
-				let added = 0;
-
-				for (const point of shape.points) {
-					if(selectBox.contains(point) && !userSelection.includes(point)) {
-						point.select();
-						userSelection.push(point);
-						added++;
-					}
-				}
-
-				console.log("Selected ", userSelection.length, " points: ", userSelection);
-
-				toDraw.splice(toDraw.indexOf(selectBox), 1);
-				selectBox = null;
-
-				if(added == 0) {
-					for (const point of userSelection) {
-						point.deselect();
-					}
-					
-					userSelection = [];
-				}
-			
-			} else if (userState == USER_STATES.DRAG) {
-				oldMouse = null;
-
-			} else if (userState == USER_STATES.EDGE) {
-				let pointTest = shape.selectPoint(e.clientX, e.clientY);
-				let edge = shape.edges.pop();
-
-				if(pointTest) {
-					edge.p2 = pointTest;
-					if(!shape.edgeInEdges(edge)) {
-						shape.edges.push(edge);
-					} else {
-						shape.edges.splice(shape.edges.indexOf(edge), 1);
-					}
-				}
-			}
-
-			userState = USER_STATES.DEFAULT;
-		});
 	});
+
+	canvas.addEventListener('mousemove', function(e) {		// drag
+		e.preventDefault();
+
+
+		if(userState == USER_STATES.MULTISELECT) {
+			selectBox.move(e.clientX, e.clientY);
+
+		} else if (userState == USER_STATES.DRAG) {
+			// move all selected points relative to their current positions
+			if(!oldMouse) {
+				oldMouse = {x: e.clientX, y: e.clientY};
+			}
+
+			for(const point of userSelection) {
+				point.move(e.clientX, e.clientY, oldMouse.x, oldMouse.y);
+			}
+
+			oldMouse = {x: e.clientX, y: e.clientY};
+
+		} else if (userState == USER_STATES.EDGE) {
+			shape.edges[shape.edges.length - 1].p2 = {x: e.clientX, y: e.clientY};
+		}
+	});
+	
+	canvas.addEventListener('mouseup', function(e) {		// deselect point
+		e.preventDefault();
+
+		if (userState == USER_STATES.MULTISELECT) {
+
+			let added = 0;
+
+			for (const point of shape.points) {
+				if(selectBox.contains(point) && !userSelection.includes(point)) {
+					point.select();
+					userSelection.push(point);
+					added++;
+				}
+			}
+
+			console.log("Selected ", userSelection.length, " points: ", userSelection);
+
+			toDraw.splice(toDraw.indexOf(selectBox), 1);
+			selectBox = null;
+
+			if(added == 0) {
+				for (const point of userSelection) {
+					point.deselect();
+				}
+				
+				userSelection = [];
+			}
+		
+		} else if (userState == USER_STATES.DRAG) {
+			oldMouse = null;
+
+		} else if (userState == USER_STATES.EDGE) {
+			let pointTest = shape.selectPoint(e.clientX, e.clientY);
+			let edge = shape.edges.pop();
+
+			if(pointTest) {
+				edge.p2 = pointTest;
+				if(!shape.edgeInEdges(edge)) {
+					shape.edges.push(edge);
+				} else {
+					shape.edges.splice(shape.edges.indexOf(edge), 1);
+				}
+			}
+		}
+
+		userState = USER_STATES.DEFAULT;
+	});
+
+	$('#cmdbar-hider')[0].onclick = toggleTaskbar;
 });
 
 
