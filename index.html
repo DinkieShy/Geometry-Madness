@@ -3,16 +3,22 @@
 	<head>
 		<title>g e o m e t r y</title>
 		<link rel="stylesheet" href="styles.css" type="text/css">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>
-		<script src="main.js" type="text/javascript"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" type="text/javascript"></script>
+		<script src="./scripts/classes.js" type="text/javascript"></script>
+		<script src="./scripts/newmain.js" type="text/javascript"></script>
+		<script src="./scripts/neatfunctions.js" type="text/javascript"></script>
+		<!--script src="main.js" type="text/javascript"></script-->
 	</head>
 	<body>
 		<canvas id="canvas"></canvas>
 		<a id="downloadanchor"></a>
 		<input id="fileInput" type="file" onchange='chooseFile(event)'/>
 
+		
+
 		<section id="cmdbar">
 			<div id="btns-row">
+				<button class="cmdbar-btn" id="">Another</button>
 				<button class="cmdbar-btn" id="uploadButton">Upload!</button>
 				<button class="cmdbar-btn" id="downloadButton">Download!</button>
 			</div>
